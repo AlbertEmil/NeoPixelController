@@ -9,6 +9,8 @@
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRBW + NEO_KHZ800);
 StaticJsonDocument<JSON_DOCUMENT_SIZE> doc;
 
+const uint32_t defaultColor = strip.Color(0, 0, 255, 0);
+
 // {
 //     "red": 255,
 //     "green": 255,
@@ -28,10 +30,11 @@ void setup()
   while (!Serial) {
     continue;
   }
+  updateLeds(defaultColor);
 }
 
 
-void updateLeds()
+uint32_t parseJson()
 {
   // TODO: Improvement: Think about incomplete JSON objects with missing data
   
@@ -55,7 +58,12 @@ void updateLeds()
   Serial.println(white);
   // Serial.println(brightness);
 
-  uint32_t color = strip.Color(red, green, blue, white); 
+  return strip.Color(red, green, blue, white);
+}
+
+
+void updateLeds(uint32_t color)
+{
   for (uint8_t i=0; i<LED_COUNT; i++)
   {
     strip.setPixelColor(i, color);
@@ -90,7 +98,8 @@ void loop()
       continue;
     }
 
-    updateLeds();
+    uint32_t color = parseJson();
+    updateLeds(color);
 
   };
   
